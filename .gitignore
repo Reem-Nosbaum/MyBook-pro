@@ -1,0 +1,12 @@
+# קבצים ותיקיות של IDE
+.idea/
+.DS_Store
+
+# תיקיות לוגים
+database/logfile
+
+# קבצי קומפוזיציה מקומיים
+docker-compose.yml
+
+# כל תיקיית Cache
+__pycache__/
