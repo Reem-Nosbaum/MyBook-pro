@@ -1,0 +1,10 @@
+# קבצים ותיקיות של IDE
+.idea/
+.DS_Store
+
+# תיקיות לוגים
+database/logfile
+
+
+# כל תיקיית Cache
+__pycache__/
