@@ -1,0 +1,55 @@
+name: CI Pipeline for MyBook
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+    name: Lint and Test Code
+    runs-on: ubuntu-latest
+
+    steps:
+      # שלב 1: Checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # שלב 2: בדיקות סינטקס ל-Python
+      - name: Run Python Lint (flake8)
+        uses: py-actions/flake8@v2
+        with:
+          path: "./backend"
+          args: "--ignore=E501"
+
+      # שלב 3: בדיקות סינטקס ל-JavaScript
+      - name: Run JavaScript Lint (ESLint)
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          eslint_flags: "./frontend/static/script.js"
+
+      # שלב 4: בניית Docker Images
+      - name: Build Backend Docker Image
+        run: |
+          docker build -t mybook-backend ./backend
+
+      - name: Build Frontend Docker Image
+        run: |
+          docker build -t mybook-frontend ./frontend
+
+      # שלב 5: בדיקה של Docker Compose
+      - name: Run Docker Compose
+        run: |
+          docker-compose up -d
+          sleep 10
+          docker-compose ps
+          curl http://127.0.0.1:5000  # בודק שה-Backend רץ
+          curl http://127.0.0.1:8080  # בודק שה-Frontend רץ
+
+      # שלב 6: עצירת Docker Compose
+      - name: Stop Docker Compose
+        run: docker-compose down
